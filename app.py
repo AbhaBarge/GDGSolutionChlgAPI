@@ -10,7 +10,7 @@ app = FastAPI()
 def extract_frames(video_url: str):
     frames = []
 
-    ydl_opts = {"quiet": True, "format": "best"}
+    ydl_opts = {"quiet": True, "format": "best", "cookies": "cookies.txt"}
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(video_url, download=False)
         stream_url = info["url"]
