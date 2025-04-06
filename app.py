@@ -9,34 +9,33 @@ app = FastAPI()
 @app.get("/extract-frames")
 def extract_frames(video_url: str):
     frames = []
-    stream_url = None
 
-    # Use yt-dlp to get the streamable URL
     ydl_opts = {"quiet": True, "format": "best"}
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(video_url, download=False)
         stream_url = info["url"]
 
-    # Open video stream
+    print(stream_url)
+
+    # Open video stream using OpenCV
     cap = cv2.VideoCapture(stream_url)
+
     if not cap.isOpened():
-        return {"error": "Could not open video."}
+        print("Error: Could not open video.")
+        return frames
 
     frame_count = 0
+
     while True:
         ret, frame = cap.read()
-        if not ret or frame_count >= 10:
+        print("Frame : ")
+        cv2_imshow(frame)
+        if not ret:
             break
-
-        # Convert frame to RGB
-        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        
-        # Encode frame as JPG
-        _, img_encoded = cv2.imencode('.jpg', rgb)
-        
-        # Convert to base64 string
-        img_b64 = base64.b64encode(img_encoded.tobytes()).decode('utf-8')
-        frames.append(img_b64)
+        if frame_count < 10:  # Extract only every `frame_interval`th frame
+            frames.append(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))  # Convert to RGB
+        else :
+            break
 
         frame_count += 1
 
