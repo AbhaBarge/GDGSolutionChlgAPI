@@ -1,4 +1,4 @@
 fastapi
 uvicorn
-yt-dlp
 opencv-python-headless
+yt-dlp
